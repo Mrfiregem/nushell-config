@@ -25,8 +25,8 @@ Note: All commands aside from `todo format` take an optional `--file(-f)` flag, 
 | ------- | ----------- |
 | `todo add 'Do the dishes'` | Add a simple task with only a description and creation date |
 | `todo add -p 'A' 'Finish @coding +project'` | Add a task with a priority letter (A-Z) and tags |
-| `todo --complete 'Go to school'` | Add a task to the file that is already marked complete |
-| `todo -C 'Live life'` | Add a task but omit the creation (and completion, if `-c` is passed) date field(s) |
+| `todo add --complete 'Go to school'` | Add a task to the file that is already marked complete |
+| `todo add -C 'Live life'` | Add a task but omit the creation (and completion, if `-c` is passed) date field(s) |
 
 ### `todo list`
 
