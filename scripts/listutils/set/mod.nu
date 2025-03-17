@@ -1,5 +1,5 @@
 # Convert a list into a set of unique values
-export alias "into set" = uniq
+export def "into set" []: list<any> -> list<any> { uniq }
 
 # Generate the set of all possible subsets of a given set
 export def powerset []: list<any> -> list<list<any>> {
@@ -18,4 +18,14 @@ export def powerset []: list<any> -> list<list<any>> {
     }
 
     return $power_set
+}
+
+# Check if a list is a subset of another list
+export def is-subset-of [superset: list<any>]: list<any> -> bool {
+    all {|e| $e in $superset }
+}
+
+# Check if a list is a superset of another list
+export def is-superset-of [subset: list<any>]: list<any> -> bool {
+    do {|superset| $subset | is-subset-of $superset } $in
 }
