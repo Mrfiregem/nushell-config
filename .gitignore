@@ -1,5 +1,9 @@
+# Untrack history files
 history.txt
 history.sqlite3
 history.sqlite3.bak
+history.sqlite3-shm
+history.sqlite3-wal
 
+# Untrack plugin metadata file
 plugin.msgpackz
