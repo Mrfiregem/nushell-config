@@ -132,7 +132,7 @@ export def "todo add" [
 export def "todo toggle" [id: int --file(-f): path = $default_todo_path] {
     todo table --file $file
     | update complete {|rc| if $rc.index == $id { not $rc.complete } else {} }
-    | update completion_date {|rc| if $rc.complete and $rc.creation_date != null { date now } }
+    | update completion_date {|rc| if $rc.index == $id { if $rc.complete and $rc.creation_date != null { date now } } else {} }
     | todo format
     | collect { save -f $file }
 }
