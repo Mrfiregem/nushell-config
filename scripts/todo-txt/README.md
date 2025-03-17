@@ -2,6 +2,17 @@
 
 A pure Nushell module to read, write, and update your todo.txt task file.
 
+## Loading Module
+
+Place this folder containing the `mod.nu` file into a directory listed in `$NU_LIB_DIRS`, then load the module from your configuration file.
+
+```nushell
+# config.nu
+use todo-txt/ *
+# Or alternatively...
+overlay use todo-txt/
+```
+
 ## Usage
 
 Note: All commands aside from `todo format` take an optional `--file(-f)` flag, which will determine the location of the `todo.txt` file that is deing operated on. (Default: `~/todo.txt`)
