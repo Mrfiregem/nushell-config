@@ -22,5 +22,7 @@ const OS_EXTRA_CONFIG = if $nu.os-info.name == 'windows' {
     'windows-config.nu'
 } else if $nu.os-info.name == 'macos' {
     'macos-config.nu'
+} else if $nu.os-info.name == 'linux' {
+    'linux-config.nu'
 }
 source $OS_EXTRA_CONFIG
