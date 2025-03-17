@@ -1,6 +1,12 @@
-export use set/ *
+# Include the set submodule if importing all of listutils
+export use set/
 
-export def step []: list<any> -> list<list<any>> {
+# Given a list, create a list of slices of the original list with increasing length
+#
+# # Example
+# > 'foo/bar/baz' | path split | step-list | to nuon
+# [[foo], [foo, bar], [foo, bar, baz]]
+export def step-list []: list<any> -> list<list<any>> {
     let input = $in
     let n = $input | length
     mut result = []
