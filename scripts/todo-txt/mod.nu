@@ -5,6 +5,14 @@ const default_formatstr = '{fmt.complete}{fmt.priority}{fmt.completion_date}{fmt
 # Load helper functions
 use _helpers.nu *
 
+export def todo []: nothing -> nothing {
+	const link = 'https://github.com/Mrfiregem/nushell-config/blob/master/scripts/todo-txt/README.md'
+	print $"Documentation can be found online: '($link)'"
+	if (input -n 1 'Would you like to open your browser? [Y/n]: ' | default 'y' |str downcase) != 'n' {
+		start $link
+	}
+}
+
 # Get your todo.txt list as a table
 #
 # Examples:
@@ -25,7 +33,7 @@ export def "todo table" [--file(-f): path = $default_todo_path]: nothing -> tabl
 #
 # Examples:
 # # Show a simple list of outstanding tasks
-# todo table | where complete | sort-by priority | todo format '- {description}'
+# todo table | where not complete | sort-by priority | todo format '- {description}'
 export def "todo format" [
     formatstr: string = $default_formatstr # The string used to format table input (same as `format pattern`)
     --pre-block(-B): closure # Code to run to modify columns before `format pattern`
@@ -87,6 +95,12 @@ export def "todo tidy" [--file(-f): path = $default_todo_path]: nothing -> nothi
 }
 
 # Add a task to your todo.txt file
+#
+# Examples
+# # Add a simple task
+# todo add 'Do laundry @chores'
+# # Set a priority for a new task
+# todo add -p A 'Do this urgently'
 export def "todo add" [
     --file(-f): path = $default_todo_path # Path to your todo.txt file
     --complete(-c) # Add the task already completed
