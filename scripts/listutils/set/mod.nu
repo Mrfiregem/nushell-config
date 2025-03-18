@@ -1,3 +1,5 @@
+# Tools to work with lists as sets
+
 # BASIC OPERATIONS
 # ================
 
@@ -39,19 +41,13 @@ export def difference [set_b: list<any>]: list<any> -> list<any> {
 
 # Generate the set of all possible subsets of a given set
 export def powerset []: list<any> -> list<list<any>> {
-    let input: list<any> = $in
+    let input = $in
     let n = $input | length
-    mut power_set = []
-
-    for i in 0..<(2 ** $n) {
-        mut subset = []
-        for j in 0..<$n {
-            if ($i | bits and (1 | bits shl $j)) > 0 {
-                $subset = $subset | append ($input | get $j)
-            }
+    mut result = [[]]
+    for i in 0..<$n {
+        for j in ($i + 1)..$n {
+            $result = $result | append [($input | slice $i..<$j)]
         }
-        $power_set = $power_set | append [$subset]
     }
-
-    return $power_set
+    return $result
 }
