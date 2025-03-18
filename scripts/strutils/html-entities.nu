@@ -1,3 +1,4 @@
+# Replace the characters '<', '>', and '&' with their HTML entity codes
 export def html-encode []: [
     string -> string
     list<string> -> list<string>
@@ -7,6 +8,7 @@ export def html-encode []: [
     } | collect
 }
 
+# Replace all HTML entity codes with the character they represent
 export def html-decode []: [
     string -> string
     list<string> -> list<string>
