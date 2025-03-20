@@ -6,7 +6,7 @@ export use set/
 # # Example
 # > 'foo/bar/baz' | path split | step-list | to nuon
 # [[foo], [foo, bar], [foo, bar, baz]]
-export def step-list []: list<any> -> list<list<any>> {
+export def "list step" []: list<any> -> list<list<any>> {
     let input = $in
     let n = $input | length
     mut result = []
@@ -15,3 +15,12 @@ export def step-list []: list<any> -> list<list<any>> {
     }
     return $result
 }
+
+# Returns the index of the first element matching `value`, or -1 if there's no match.
+export def "list index-of" [value: any]: list<any> -> int {
+for el in ($in | enumerate) {
+    if $el.item == $value { return $el.index }
+}
+return (-1)
+}
+
