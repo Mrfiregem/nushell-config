@@ -19,10 +19,10 @@ def "http pastebin" [file: path, extra_data: record = {}] {
 
 # Load additional os-specific configurations
 const OS_EXTRA_CONFIG = if $nu.os-info.name == 'windows' {
-    'windows-config.nu'
+    'os-config/windows-config.nu'
 } else if $nu.os-info.name == 'macos' {
-    'macos-config.nu'
+    'os-config/macos-config.nu'
 } else if $nu.os-info.name == 'linux' {
-    'linux-config.nu'
+    'os-config/linux-config.nu'
 }
 source $OS_EXTRA_CONFIG

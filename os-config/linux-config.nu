@@ -5,3 +5,5 @@ module clip {
     export def paste []: nothing -> string { ^wl-paste | collect }
 }
 use clip
+
+source unix-config.nu
