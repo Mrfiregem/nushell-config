@@ -10,6 +10,8 @@ $env.config.buffer_editor = 'nvim'
 use todo-txt/ *
 # Module to access clipboard
 use std-rfc/clip
+# Load wrappers for certain externals
+overlay use cmd-wrappers/
 
 # Create a new directory and open it
 def --env mkcd [path: path] { mkdir $path; cd $path }
