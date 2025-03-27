@@ -1,5 +1,3 @@
-use std/util ['path add']
-
 # Configure nushell
 $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
@@ -33,5 +31,13 @@ def "http pastebin" [file: path, extra_data: record = {}] {
 def "list-view" []: any -> string { each { table } | to text }
 
 # Set path
-path add ~/.local/bin
-$env.PATH = $env.PATH | uniq
+do --env {
+    use std/util ['path add']
+    path add [~/.local/bin, ~/.nimble/bin]
+    $env.PATH = $env.PATH | uniq
+}
+
+# Set env vars
+load-env {
+    EDITOR: 'nvim'
+}
