@@ -1,20 +1,21 @@
 const default_columns = [name, id, version, branch, system]
-def types-completion [] { [app, runtime, *] }
 
 # List installed flatpaks
 export def list [
-    --type(-t): string@types-completion = '*' # 'app', 'runtime', or '*' for both
-    --columns(-c): list<string> = $default_columns # Which columns to show
+    --app(-a) # Only show installed apps
+    --runtime(-r) # Only show installed runtimes
+    --columns(-c): list<string> = $default_columns # Which columns to show (or ['all'])
 ]: nothing -> table {
-    ^flatpak list --columns=all
+    if $app and not $runtime {
+        ^flatpak list --app --columns=all
+    } else if $runtime and not $app {
+        ^flatpak list --runtime --columns=all
+    } else {
+        ^flatpak list --columns=all
+    }
     | from tsv -n --no-infer
     | rename name description id version branch arch origin system ref commit_active commit_latest size options
     | into filesize 'size'
     | update options { split row ',' }
-    | match ($type | str downcase) {
-        'app' => { where options not-has 'runtime' }
-        'runtime' => { where options has 'runtime' }
-        _ => {}
-    }
-    | if $columns has '*' {} else { select ...$columns }
+    | if $columns has 'all' {} else { select ...$columns }
 }
