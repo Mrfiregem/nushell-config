@@ -14,6 +14,7 @@ overlay use cmd-wrappers/
 # Create a new directory and open it
 def --env mkcd [path: path] { mkdir $path; cd $path }
 def --env cdl [...path: string]: [
+    nothing -> nothing
     string -> nothing
     list<string> -> nothing
 ] {
