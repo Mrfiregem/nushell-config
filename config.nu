@@ -42,3 +42,5 @@ do --env {
 load-env {
     EDITOR: 'nvim'
 }
+
+alias nv = neovide
