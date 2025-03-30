@@ -19,3 +19,16 @@ export def list [
     | update options { split row ',' }
     | if $columns has 'all' {} else { select ...$columns }
 }
+
+# Remove packages interactively
+export def rmi --wrapped [...flatpak_rm_args: string] {
+    let ids = list --columns [name description id]
+    | insert fmt {|rc| $'($rc.name): ($rc.description)' }
+    | input list -md fmt 'Choose flatpaks to uninstall'
+    | get id
+
+    if ($ids | is-not-empty) {
+        print $'Uninstalling selected: ($ids | to nuon)'
+        ^flatpak uninstall ...$flatpak_rm_args ...$ids
+    }
+}
