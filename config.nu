@@ -2,7 +2,7 @@
 $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
 # Set text editor
-$env.config.buffer_editor = 'nvim'
+$env.config.buffer_editor = 'neovide'
 
 # Manage tasks using todo.txt
 use todo-txt/ *
@@ -40,7 +40,7 @@ do --env {
 
 # Set env vars
 load-env {
-    EDITOR: 'nvim'
+    EDITOR: 'neovide'
 }
 
 alias nv = neovide
