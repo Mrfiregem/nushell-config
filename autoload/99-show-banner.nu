@@ -1,6 +1,8 @@
 def _nu_banner [] {
-    let out = nvcmp
-    if ($out | length) > 0 { $out } else { ^fortune -s }
+    try {
+        let out = nvcmp
+        if ($out | length) > 0 { $out } else { ^fortune -s }
+    } catch { date now | format date '%c' }
     | print
 }
 
