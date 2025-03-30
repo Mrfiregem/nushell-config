@@ -30,3 +30,11 @@ export def "list index-of" [value: any]: list<any> -> int {
 export def "list is-table" []: list<any> -> bool {
     collect | describe -d | get values | all {|val| $val has 'type' and $val.type == 'record' }
 }
+
+# If the input is a list with 1 item, return that item, otherwise no-op
+export def "list try-unwrap" [] {
+    match $in {
+        [$x] => $x,
+        _ => $in
+    }
+}
