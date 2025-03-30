@@ -17,10 +17,16 @@ export def "list step" []: list<any> -> list<list<any>> {
 }
 
 # Returns the index of the first element matching `value`, or -1 if there's no match.
+@example "Get the index of 'bar'" { [foo bar baz] | list index-of bar } --result 1
 export def "list index-of" [value: any]: list<any> -> int {
-for el in ($in | enumerate) {
-    if $el.item == $value { return $el.index }
-}
-return (-1)
+    for el in ($in | enumerate) {
+        if $el.item == $value { return $el.index }
+    }
+    return (-1)
 }
 
+# Check if all items of a list are a record (stopgap until `table` type exists)
+@example "Check if list<any> can perform table operations" { [{a: 1}, {b: 2}, 'c'] | list is-table } --result false
+export def "list is-table" []: list<any> -> bool {
+    collect | describe -d | get values | all {|val| $val has 'type' and $val.type == 'record' }
+}
