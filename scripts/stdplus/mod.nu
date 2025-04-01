@@ -3,6 +3,7 @@
 # The closure recieves value as input, and also optionally
 # is passed the current key and value as parameters.
 @example "Capitalize strings" { {foo: 'bar', baz: 'quox'} | update keys { str upcase } } --result {foo: 'BAR', baz: 'QUOX'}
+@example "Using closure params" { {a:1, b:2, c:3} | update keys {|k,v| [$k $v] | str join } } --result {a: "a1", b: "b2", c: "c3"}
 @category "filters"
 export def "update keys" [
     --keys(-k): list<string> # Which record keys to modify
