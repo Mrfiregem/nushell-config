@@ -16,3 +16,17 @@ export def "update keys" [
     }
     return $input
 }
+
+# Rename a deeply nested record using a block
+def "rename deep" [block: closure]: record -> record {
+    rename -b $block | transpose k v
+    | each {
+        update v {|rc|
+            match ($rc.v | describe -d).type {
+                'record' => { $rc.v | rename deep $block }
+                _ => $rc.v
+            }
+        }
+    }
+    | transpose -rd
+}
