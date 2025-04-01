@@ -13,7 +13,7 @@ use std-rfc/clip
 # Load wrappers for certain externals
 overlay use cmd-wrappers/
 # Load custom functions that should be builtins
-overlay use stdplus/
+use stdplus/
 
 # Create a new directory and open it
 def --env mkcd [path: path] { mkdir $path; cd $path }
