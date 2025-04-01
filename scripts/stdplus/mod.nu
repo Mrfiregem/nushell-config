@@ -1,0 +1,17 @@
+# Run a closure to modify the value of each record key.
+#
+# The closure recieves value as input, and also optionally
+# is passed the current key and value as parameters.
+@example "Capitalize strings" { {foo: 'bar', baz: 'quox'} | update keys { str upcase } } --result {foo: 'BAR', baz: 'QUOX'}
+@category "filters"
+export def "update keys" [
+    --keys(-k): list<string> # Which record keys to modify
+    closure: closure         # The closure to run on each key
+]: record -> record {
+    mut input = $in
+    let keys = $keys | default ($input | columns) | where $it in ($input | columns)
+    for k in $keys {
+        $input = $input | update $k {|rc| do $closure $k ($rc | get $k)}
+    }
+    return $input
+}

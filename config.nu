@@ -3,38 +3,8 @@ $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
 # Set text editor
 $env.config.buffer_editor = 'neovide'
-
-# Set fuzzy history completion
-$env.config.keybindings ++= [{
-    name: 'fuzzy_history'
-    modifier: CONTROL
-    keycode: char_r
-    mode: [emacs vi_normal]
-    event: [
-        {
-            send: ExecuteHostCommand
-            cmd: "do {
-            $env.SHELL = '/usr/bin/bash'
-            commandline edit (
-            history
-            | get command
-            | reverse
-            | uniq
-            | str join (char -i 0)
-            | fzf --scheme=history
-            --read0
-            --layout=reverse
-            --height=40%
-            --bind 'ctrl-/:change-preview-window(right,70%|right)'
-            --preview='echo -n {} | nu --stdin -c 'nu-highlight''
-            -q (commandline)
-            | decode utf-8
-            | str trim
-            )
-            }"
-        }
-    ]
-}]
+$env.EDITOR = 'neovide'
+alias nv = ^$env.EDITOR
 
 # Manage tasks using todo.txt
 use todo-txt/ *
@@ -42,6 +12,8 @@ use todo-txt/ *
 use std-rfc/clip
 # Load wrappers for certain externals
 overlay use cmd-wrappers/
+# Load custom functions that should be builtins
+overlay use stdplus/
 
 # Create a new directory and open it
 def --env mkcd [path: path] { mkdir $path; cd $path }
@@ -69,10 +41,3 @@ do --env {
     path add [~/.local/bin, ~/.nimble/bin]
     $env.PATH = $env.PATH | uniq
 }
-
-# Set env vars
-load-env {
-    EDITOR: 'neovide'
-}
-
-alias nv = neovide
