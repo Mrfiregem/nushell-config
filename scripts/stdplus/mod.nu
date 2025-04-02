@@ -18,6 +18,7 @@ export def "update keys" [
 }
 
 # Rename a deeply nested record using a block
+@category 'filters'
 def "rename deep" [block: closure]: record -> record {
     rename -b $block | transpose k v
     | each {
@@ -32,6 +33,7 @@ def "rename deep" [block: closure]: record -> record {
 # Get the base type of any input
 @example "Get the type of `ls`" { ls | type } --result "table"
 @example "Identify a list" { seq 1 5 | type } --result "list"
+@category 'core'
 def type []: any -> string {
     match ($in | describe -d) {
         {type: 'list', values: $l} => {
