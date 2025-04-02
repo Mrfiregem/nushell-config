@@ -21,12 +21,23 @@ export def "update keys" [
 def "rename deep" [block: closure]: record -> record {
     rename -b $block | transpose k v
     | each {
-        update v {|rc|
-            match ($rc.v | describe -d).type {
-                'record' => { $rc.v | rename deep $block }
-                _ => $rc.v
-            }
-        }
+        update v {|rc| match ($rc.v | describe -d).type {
+            'record' => { $rc.v | rename deep $block }
+            _ => $rc.v
+        }}
     }
     | transpose -rd
+}
+
+# Get the base type of any input
+@example "Get the type of `ls`" { ls | type } --result "table"
+@example "Identify a list" { seq 1 5 | type } --result "list"
+def type []: any -> string {
+    match ($in | describe -d) {
+        {type: 'list', values: $l} => {
+            if ($l has type) and (($l.type | uniq) == ['record']) { 'table' } else { 'list' }
+        }
+        {type: $t} => $t
+        _ => 'unknown'
+    }
 }
