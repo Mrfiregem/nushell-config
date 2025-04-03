@@ -32,6 +32,12 @@ def "http pastebin" [file: path, extra_data: record = {}] {
     http post --content-type multipart/form-data 'https://0x0.st' $post_data
 }
 
+# Download a file from the web
+def wget [--force(-f), url: string, out?: path] {
+    let filename = $out | default ($url | url parse | get path | path basename)
+    http get $url | if $force { save -f $filename } else { save $filename }
+}
+
 # Similar to pwsh's `Format-List`; view table as list of records
 def "list-view" []: any -> string { each { table } | to text }
 
