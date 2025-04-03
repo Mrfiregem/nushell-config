@@ -32,9 +32,23 @@ export def "list is-table" []: list<any> -> bool {
 }
 
 # If the input is a list with 1 item, return that item, otherwise no-op
+@example "Doesn't unwrap" { ls | list try-unwrap }
+@example "Unwraps into individual record or null" { which 'nvim' | list try-unwrap }
 export def "list try-unwrap" [] {
     match $in {
         [$x] => $x,
         _ => $in
+    }
+}
+
+# Wraps a single value into a list. Opposite of `list try-unwrap`
+@example 'Wrap a string' { 'foo' | list wrap } --result ['foo']
+@example 'Wrap null' { null | list wrap } --result []
+@example 'Returns as-is' { ls | list wrap }
+export def "list wrap" []: any -> list<any> {
+    match $in {
+        null => [],
+        [ ..$x ] => [...$x],
+        $x => [$x]
     }
 }
