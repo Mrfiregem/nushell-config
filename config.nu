@@ -2,8 +2,8 @@
 $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
 # Set text editor
-$env.config.buffer_editor = 'neovide'
-$env.EDITOR = 'neovide'
+$env.config.buffer_editor = (which 'neovide').0?.path | default 'nvim'
+$env.EDITOR = $env.config.buffer_editor
 alias nv = ^$env.EDITOR
 
 # Manage tasks using todo.txt
