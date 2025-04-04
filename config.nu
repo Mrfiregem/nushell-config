@@ -17,12 +17,18 @@ use stdplus/ *
 
 # Create a new directory and open it
 def --env mkcd [path: path] { mkdir $path; cd $path }
+# Combine path parts with `path join` then `cd` to result
 def --env cdl [...path: string]: [
     nothing -> nothing
     string -> nothing
     list<string> -> nothing
-] {
-    cd ($in | append $path | path join)
+] { cd ($in | append $path | path join) }
+# Edit a file with your preferred text editor
+def edit [...file: path]: nothing -> nothing {
+    use listutils/ ["list first-valid", "list wrap"]
+    let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?, 'nvim']
+        | list first-valid | list wrap
+    run-external ...$editor ...$file
 }
 
 # Upload a file to a pastebin for sharing
