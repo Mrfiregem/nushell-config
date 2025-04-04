@@ -34,12 +34,11 @@ def "rename deep" [block: closure]: record -> record {
 @example "Get the type of `ls`" { ls | type } --result "table"
 @example "Identify a list" { seq 1 5 | type } --result "list"
 @category 'core'
-def type []: any -> string {
+export def typeof []: any -> string {
     match ($in | describe -d) {
         {type: 'list', values: $l} => {
-            if ($l has type) and (($l.type | uniq) == ['record']) { 'table' } else { 'list' }
+            if ($l | each { typeof } | uniq) == ['record'] { 'table' } else { 'list' }
         }
         {type: $t} => $t
-        _ => 'unknown'
     }
 }
