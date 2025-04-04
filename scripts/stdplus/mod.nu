@@ -42,3 +42,9 @@ export def typeof []: any -> string {
         {type: $t} => $t
     }
 }
+
+# Get environment variable or fallback to a default value
+@category 'env'
+export def env-or-default [var: string, default: any]: nothing -> any {
+    if $env has $var { $env | get $var } else { $default }
+}
