@@ -52,3 +52,10 @@ export def "list wrap" []: any -> list<any> {
         $x => [$x]
     }
 }
+
+# Return the first non-null entry in a list
+export def "list first-valid" [
+    --empty(-e) # Also ignore empty list, record, and string values
+]: list<any> -> any {
+    if $empty { compact -e } else { compact } | get 0?
+}
