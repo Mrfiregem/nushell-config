@@ -48,3 +48,17 @@ export def typeof []: any -> string {
 export def env-or-default [var: string, default: any]: nothing -> any {
     if $env has $var { $env | get $var } else { $default }
 }
+
+# Kill all processes matching search
+export def pkill [
+    --ignore-case(-i) # Ignore capitalization
+    --force(-f) # Force close processes
+    regex: string # Pattern to match proceeses on
+]: nothing -> list {
+    let ignore = if $ignore_case { '(?i)' } else { '' }
+    ps | where name =~ $'($ignore)($regex)' | tee {
+        match $in.pid? { [$a ..$b] => {
+            if $force { kill --force $a ...$b } else { kill $a ...$b }
+        }}
+    }
+}
