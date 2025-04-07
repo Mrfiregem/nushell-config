@@ -53,3 +53,9 @@ do --env {
     path add [~/.local/bin, ~/.nimble/bin]
     $env.PATH = $env.PATH | uniq
 }
+
+# Source os-local config
+const os_conf = if $nu.os-info.name == 'macos' {
+    'os-config/macos.nu'
+}
+source $os_conf
