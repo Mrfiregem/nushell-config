@@ -10,8 +10,6 @@ alias nv = ^$env.EDITOR
 use todo-txt/ *
 # Module to access clipboard
 use std-rfc/clip
-# Load wrappers for certain externals
-overlay use cmd-wrappers/
 # Load custom functions that should be builtins
 use stdplus/ *
 
