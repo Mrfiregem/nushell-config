@@ -55,5 +55,7 @@ do --env {
 # Source os-local config
 const os_conf = if $nu.os-info.name == 'macos' {
     'os-config/macos.nu'
+} else if $nu.os-info.name == 'windows' {
+    'os-config/windows.nu'
 }
 source $os_conf
