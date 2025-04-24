@@ -49,6 +49,14 @@ export def env-or-default [var: string, default: any]: nothing -> any {
     if $env has $var { $env | get $var } else { $default }
 }
 
+# Search processes matching a regex pattern
+export def pgrep [
+    --ignore-case(-i) # Ignore capitalization
+    regex: string # Pattern to match processes on
+]: nothing -> table {
+    ps | where name =~ $'(if $ignore_case { '(?i)' } else { '' })($regex)'
+}
+
 # Kill all processes matching search
 export def pkill [
     --ignore-case(-i) # Ignore capitalization
