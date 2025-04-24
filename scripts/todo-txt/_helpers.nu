@@ -4,7 +4,7 @@ export def stress_colorize []: [string -> string, nothing -> string] {
         '(A) ' => $'(char lparen)(ansi red_bold)A(ansi reset)(char rparen) '
         '(B) ' => $'(char lparen)(ansi yellow_bold)B(ansi reset)(char rparen) '
         '(C) ' => $'(char lparen)(ansi blue_bold)C(ansi reset)(char rparen) '
-        $c if $c like '^\([D-Z]\) $' => $'(char lparen)(ansi bold)($c | str substring 1..1)(ansi reset)(char rparen) '
+        $c if $c like '^\([D-Z]\) $' => $'(char lparen)(ansi attr_bold)($c | str substring 1..1)(ansi reset)(char rparen) '
         _ => ''
     }
 }
