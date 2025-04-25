@@ -150,3 +150,82 @@ export def "todo toggle" [...id: int --file(-f): path = $default_todo_path] {
     | todo format
     | collect { save -f $file }
 }
+
+# Edit a task by ID using a record with fields you want to overwrite
+@example 'Edit the description of the task with 1' { todo edit 1 {description: 'New task description'} }
+export def "todo edit" [
+    --file(-f): path = $default_todo_path # Path to your todo.txt file
+    id: int # The ID of the task to edit
+    todo_record: record # Allowed fields: [complete, priority, completion_date, creation_date, description]
+]: nothing -> nothing {
+    let todo_record_span = (metadata $todo_record).span
+
+    # Make sure record contains only valid fields
+    for col in ($todo_record | columns) {
+        if $col not-in [complete priority completion_date creation_date description] {
+            error make {
+                msg: 'Invalid column name'
+                label: {span: $todo_record_span, text: $'($col) is not a valid column name'}
+                help: 'Check `todo edit --help` for valid column names'
+            }
+        }
+        match $col {
+            'complete' => { if ($todo_record.complete | describe -d).type != bool {
+                error make {
+                    msg: 'Invalid type for complete'
+                    label: {span: $todo_record_span, text: 'Complete should be a boolean'}
+                }
+            }}
+            'priority' => { if $'($todo_record.priority)' not-in (seq char A Z) {
+                error make {
+                    msg: 'Invalid type for priority'
+                    label: {span: $todo_record_span, text: 'Priority should be a letter [A-Z]'}
+                }
+            }}
+            'completion_date' => { if ($todo_record.completion_date | describe -d).type != string {
+                error make {
+                    msg: 'Invalid type for completion_date'
+                    label: {span: $todo_record_span, text: 'Completion date should be a string'}
+                }
+            } else if $todo_record.completion_date !~ '^\d{4}-\d{2}-\d{2}$' {
+                error make {
+                    msg: 'Invalid type for completion_date'
+                    label: {span: $todo_record_span, text: 'Completion date should be formatted as YYYY-MM-DD'}
+                }
+            }}
+            'creation_date' => { if ($todo_record.creation_date | describe -d).type != string {
+                error make {
+                    msg: 'Invalid type for creation_date'
+                    label: {span: $todo_record_span, text: 'Creation date should be a string'}
+                }
+            } else if $todo_record.creation_date !~ '^\d{4}-\d{2}-\d{2}$' {
+                error make {
+                    msg: 'Invalid type for creation_date'
+                    label: {span: $todo_record_span, text: 'Creation date should be formatted as YYYY-MM-DD'}
+                }
+            }}
+            'description' => {
+                if ($todo_record.description | describe -d).type != string {
+                    error make {
+                        msg: 'Invalid type for description'
+                        label: {span: $todo_record_span, text: 'Description should be a string'}
+                    }
+                } else if ($todo_record.description | str trim | is-empty) {
+                    error make {
+                        msg: 'Description should not be empty'
+                        label: {span: $todo_record_span, text: 'Description should not be empty'}
+                    }
+                }
+            }
+        }
+    }
+
+    todo table --file $file
+    | each {|task|
+        if $task.index == $id {
+            merge $todo_record
+        } else {}
+    }
+    | todo format
+    | collect { save -f $file }
+}
