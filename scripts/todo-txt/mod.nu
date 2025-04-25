@@ -80,8 +80,13 @@ export def "todo list" [
 # Remove task(s) from the todo.txt file by ID
 @example 'Remove multiple tasks by ID' { todo rm 1 3 4 }
 @category 'todo-txt'
+export def "todo rm" [...id: int --file(-f): path = $default_todo_path]: nothing -> nothing {
+    if ($id | is-empty) { error make {
+            msg: 'Task ID missing'
+            label: {span: (metadata $id).span, text: 'ID should not be empty'}
+    }}
     todo table --file $file
-    | where index != $id
+    | where index not-in $id
     | todo format
     | collect { save -f $file }
 }
@@ -108,9 +113,13 @@ export def "todo add" [
     task_text: string # The task description
 ]: nothing -> nothing {
     let description = $task_text | str trim | ansi strip
+    let priority_span = (metadata $priority).span
     let priority = $priority | str upcase
-    if ($task_text | is-empty) {
-        error make {msg: 'Task description missing' label: {span: (metadata $task_text).span text: 'Task should not be empty'}}
+    if ($task_text | str trim | is-empty) {
+        error make {msg: 'Task description missing' label: {span: (metadata $task_text).span, text: 'Task should not be empty'}}
+    }
+    if priority not-in (seq char A Z) {
+        error make {msg: 'Priority should be a single letter [A-Z]' label: {span: $priority_span, text: 'Priority should be A-Z'}}
     }
     todo table --file $file
     | append {
@@ -130,9 +139,14 @@ export def "todo add" [
 # Mark a task as (un)completed
 @example 'Mark a task with ID 1 as completed' { todo toggle 1 }
 @category 'todo-txt'
+export def "todo toggle" [...id: int --file(-f): path = $default_todo_path] {
+    if ($id | is-empty) { error make {
+            msg: 'Task ID missing'
+            label: {span: (metadata $id).span, text: 'ID should not be empty'}
+    }}
     todo table --file $file
-    | update complete {|rc| if $rc.index == $id { not $rc.complete } else {} }
-    | update completion_date {|rc| if $rc.index == $id { if $rc.complete and $rc.creation_date != null { date now } } else {} }
+    | update complete {|rc| if $rc.index in $id { not $rc.complete } else {} }
+    | update completion_date {|rc| if $rc.index in $id { if $rc.complete and $rc.creation_date != null { date now } } else {} }
     | todo format
     | collect { save -f $file }
 }
