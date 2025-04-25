@@ -118,7 +118,7 @@ export def "todo add" [
     if ($task_text | str trim | is-empty) {
         error make {msg: 'Task description missing' label: {span: (metadata $task_text).span, text: 'Task should not be empty'}}
     }
-    if priority not-in (seq char A Z) {
+    if $priority not-in (seq char A Z | append '') {
         error make {msg: 'Priority should be a single letter [A-Z]' label: {span: $priority_span, text: 'Priority should be A-Z'}}
     }
     todo table --file $file
