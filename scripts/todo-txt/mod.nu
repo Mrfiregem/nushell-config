@@ -229,3 +229,18 @@ export def "todo edit" [
     | todo format
     | collect { save -f $file }
 }
+
+# Open the todo.txt file in your editor
+@example 'Open the todo.txt file in your editor' { todo open -e 'code' }
+@category 'todo-txt'
+export def "todo open" [
+    --file(-f): path = $default_todo_path # Path to your todo.txt file
+    --editor(-e): string # The editor to use (defaults to user editor if set, or vim)
+]: nothing -> nothing {
+    let editor = $editor | default $env.VISUAL? | default $env.EDITOR? | default 'vim'
+    if ($editor | describe -d).type == list {
+        run-external ...$editor $file
+    } else {
+        run-external $editor $file
+    }
+}
