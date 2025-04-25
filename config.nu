@@ -5,6 +5,8 @@ $env.config.history.file_format = 'sqlite'
 $env.config.buffer_editor = (which 'neovide').0?.path | default 'nvim'
 $env.EDITOR = $env.config.buffer_editor
 alias nv = ^$env.EDITOR
+# Enable carapace completers
+$env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
 
 # Manage tasks using todo.txt
 use todo-txt/ *
