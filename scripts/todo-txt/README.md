@@ -45,6 +45,25 @@ Note: All commands aside from `todo format` take an optional `--file(-f)` flag, 
 | ------- | ----------- |
 | `todo toggle 0` | If the task with ID 0 is incomplete, mark it as complete; otherwise mark it incomplete |
 
+### `todo edit`
+
+> Edit the fields of a task using a record
+
+| Example | Description |
+| ------- | ----------- |
+| `todo edit 1 {priority: A}` | Set the priority of task 1 to "A" |
+| `todo edit 1 {creation_date: '2025-04-25', description: 'New description'}` | Change multiple fields at once |
+
+The valid fields for the replacement record are a subset of those from `todo table` (see below), namely:
+
+| Column | Description |
+| ------ | ----------- |
+| complete | A bool tracking its completion state |
+| priority | A string containing a single letter from the set A-Z, or `null` |
+| completion_date | `null` if not complete or if creation_date is not available, otherwise the date of completion |
+| creation_date | The date of the task's creation, if provided, or `null` |
+| description | The main body of the task. This should always be a non-empty string |
+
 ### `todo rm`
 
 > Remove a task from your todo.txt file
@@ -69,7 +88,7 @@ Note: All commands aside from `todo format` take an optional `--file(-f)` flag, 
 | ------- | ----------- |
 | `todo table` | Get your tasks as a Nushell table |
 
-The columns outputted are as follows:
+The columns printed are as follows:
 
 | Column | Description |
 | ------ | ----------- |
@@ -78,7 +97,7 @@ The columns outputted are as follows:
 | priority | A string containing a single letter from the set A-Z, or `null` |
 | completion_date | `null` if not complete or if creation_date is not available, otherwise the date of completion |
 | creation_date | The date of the task's creation, if provided, or `null` |
-| description | The main body of the task. This should always be a string |
+| description | The main body of the task. This should always be a non-empty string |
 | projects | A list of `+project` keywords extracted from description |
 | contexts | A list of `@context` keywords extracted from description |
 | tags | A record of `key:value` keywords extracted from description, or an empty list |
