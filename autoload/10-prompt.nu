@@ -1,7 +1,9 @@
 def _nu_prompt_git_status [] {
     let branch = ^git rev-parse --abbrev-ref HEAD | complete
     let dirty = if (^git status --porcelain | complete).stdout != '' { '*' } else { '' }
-    if ($branch.exit_code == 0) { $'(char lp)($branch.stdout | str trim)($dirty)(char rp)' }
+    if ($branch.exit_code == 0) {
+        $'(char lp)($branch.stdout | str trim)($dirty)(char rp)'
+    } else { '' }
 }
 
 # Set prompt
@@ -26,5 +28,6 @@ def "path format-fish" []: string -> string {
 
 $env.PROMPT_COMMAND = {
     let git_status = _nu_prompt_git_status
-    $'([($env.PWD | path format-fish), $git_status] | compact -e | str join " ") '
+    let path = $env.PWD | path format-fish
+    if $git_status == '' { $path + "\n" } else { $"($path) ($git_status)\n" }
 }
