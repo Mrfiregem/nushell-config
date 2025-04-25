@@ -1,3 +1,5 @@
+$env.config.render_right_prompt_on_last_line = true
+
 def _nu_prompt_git_status [] {
     let branch = ^git rev-parse --abbrev-ref HEAD | complete
     let dirty = if (^git status --porcelain | complete).stdout != '' { '*' } else { '' }
