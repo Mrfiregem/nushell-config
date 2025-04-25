@@ -5,6 +5,8 @@ const default_formatstr = '{fmt.complete}{fmt.priority}{fmt.completion_date}{fmt
 # Load helper functions
 use _helpers.nu *
 
+# Manage your todo.txt file
+@category 'todo-txt'
 export def todo []: nothing -> nothing {
 	const link = 'https://github.com/Mrfiregem/nushell-config/blob/master/scripts/todo-txt/README.md'
 	print $"Documentation can be found online: '($link)'"
@@ -14,13 +16,9 @@ export def todo []: nothing -> nothing {
 }
 
 # Get your todo.txt list as a table
-#
-# Examples:
-# # Get all tasks
-# todo table
-#
-# # Parse a todo file from another location
-# todo table -f /path/to/todo.txt
+@example 'Get todo.txt as a table' { todo table }
+@example 'Get todo.txt as a table from a specific file' { todo table -f /path/to/todo.txt }
+@category 'todo-txt'
 export def "todo table" [--file(-f): path = $default_todo_path]: nothing -> table {
     if not ($file | path exists) { touch $file }
     open --raw $file | file_parser
@@ -30,10 +28,8 @@ export def "todo table" [--file(-f): path = $default_todo_path]: nothing -> tabl
 }
 
 # Print your todo.txt file in human-readable format
-#
-# Examples:
-# # Show a simple list of outstanding tasks
-# todo table | where not complete | sort-by priority | todo format '- {description}'
+@example 'Show a simple list of outstanding tasks' { todo table | where not complete | sort-by priority | todo format '- {description}' }
+@category 'todo-txt'
 export def "todo format" [
     formatstr: string = $default_formatstr # The string used to format table input (same as `format pattern`)
     --pre-block(-B): closure # Code to run to modify columns before `format pattern`
@@ -57,6 +53,9 @@ export def "todo format" [
 }
 
 # Print outstanding tasks with syntax highlighting
+@example 'Print your todo list with syntax highlighting' { todo list }
+@example 'Include completed tasks' { todo list --all }
+@category 'todo-txt'
 export def "todo list" [
     --all(-a) # Include completed tasks
     --file(-f): path = $default_todo_path # The path to the todo.txt file
@@ -78,8 +77,9 @@ export def "todo list" [
     | print
 }
 
-# Remove a task from the todo.txt file by ID
-export def "todo rm" [id: int --file(-f): path = $default_todo_path]: nothing -> nothing {
+# Remove task(s) from the todo.txt file by ID
+@example 'Remove multiple tasks by ID' { todo rm 1 3 4 }
+@category 'todo-txt'
     todo table --file $file
     | where index != $id
     | todo format
@@ -87,6 +87,7 @@ export def "todo rm" [id: int --file(-f): path = $default_todo_path]: nothing ->
 }
 
 # Remove all completed tasks from file
+@category 'todo-txt'
 export def "todo tidy" [--file(-f): path = $default_todo_path]: nothing -> nothing {
     todo table --file $file
     | where not complete
@@ -95,12 +96,10 @@ export def "todo tidy" [--file(-f): path = $default_todo_path]: nothing -> nothi
 }
 
 # Add a task to your todo.txt file
-#
-# Examples
-# # Add a simple task
-# todo add 'Do laundry @chores'
-# # Set a priority for a new task
-# todo add -p A 'Do this urgently'
+@example 'Add a simple task' { todo add 'Do laundry @chores' }
+@example 'Add a task and set priority' { todo add -p A 'Do this urgently' }
+@example 'Add an already completed task' { todo add --complete 'Create the todo-txt module' }
+@category 'todo-txt'
 export def "todo add" [
     --file(-f): path = $default_todo_path # Path to your todo.txt file
     --complete(-c) # Add the task already completed
@@ -129,7 +128,8 @@ export def "todo add" [
 }
 
 # Mark a task as (un)completed
-export def "todo toggle" [id: int --file(-f): path = $default_todo_path] {
+@example 'Mark a task with ID 1 as completed' { todo toggle 1 }
+@category 'todo-txt'
     todo table --file $file
     | update complete {|rc| if $rc.index == $id { not $rc.complete } else {} }
     | update completion_date {|rc| if $rc.index == $id { if $rc.complete and $rc.creation_date != null { date now } } else {} }
