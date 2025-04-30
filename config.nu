@@ -50,7 +50,10 @@ def "list-view" []: any -> string { each { table } | to text }
 # Set path
 do --env {
     use std/util 'path add'
-    path add ~/.local/bin ~/.nimble/bin
+    path add [
+        {linux: ~/.local/bin, macos: ~/.local/bin, windows: ~/bin}
+        ~/.nimble/bin
+    ]
 }
 
 # Source os-local config
