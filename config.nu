@@ -49,9 +49,8 @@ def "list-view" []: any -> string { each { table } | to text }
 
 # Set path
 do --env {
-    use std/util ['path add']
-    path add [~/.local/bin, ~/.nimble/bin]
-    $env.PATH = $env.PATH | uniq
+    use std/util 'path add'
+    path add ~/.local/bin ~/.nimble/bin
 }
 
 # Source os-local config
