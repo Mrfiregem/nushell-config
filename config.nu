@@ -2,9 +2,8 @@
 $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
 # Set text editor
-$env.config.buffer_editor = (which 'neovide').0?.path | default 'nvim'
+$env.config.buffer_editor = 'nvim'
 $env.EDITOR = $env.config.buffer_editor
-alias nv = ^$env.EDITOR
 # Enable carapace completers
 $env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
 
