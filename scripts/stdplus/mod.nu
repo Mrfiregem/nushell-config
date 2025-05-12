@@ -65,8 +65,6 @@ export def pkill [
 ]: nothing -> list {
     let ignore = if $ignore_case { '(?i)' } else { '' }
     ps | where name =~ $'($ignore)($regex)' | tee {
-        match $in.pid? { [$a ..$b] => {
-            if $force { kill --force $a ...$b } else { kill $a ...$b }
-        }}
+        if ($in | is-not-empty) { kill ...$in.pid }
     }
 }
