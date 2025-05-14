@@ -12,3 +12,11 @@ def "config edit" [...file: string] {
     let editor = $env.config.buffer_editor? | default $env.EDITOR? | default 'nvim'
     ^$editor ($nu.default-config-dir | path join ...$file)
 }
+
+# Open nvim config in lazygit
+def --env "config nvim" [
+    --folder(-f) # cd to the directory instead
+]: nothing -> nothing {
+    let nvim_dir = ^nvim --headless --cmd 'echo stdpath("config")' -c 'quit' e>| $in
+    if $folder { cd $nvim_dir } else { ^lazygit --path $nvim_dir }
+}
