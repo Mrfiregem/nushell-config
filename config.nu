@@ -7,8 +7,6 @@ $env.EDITOR = $env.config.buffer_editor
 # Enable carapace completers
 $env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense'
 
-# Manage tasks using todo.txt
-use todo-txt/ *
 # Module to access clipboard
 use std-rfc/clip
 # Load custom functions that should be builtins
