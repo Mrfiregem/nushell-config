@@ -5,7 +5,13 @@ def "config pull" [] { ^git -C $nu.default-config-dir pull }
 def "config push" [] { ^git -C $nu.default-config-dir push 'origin' 'master' }
 
 # Open config folder in interactive git TUI
-def "config git" [] { ^lazygit --path $nu.default-config-dir }
+def --wrapped "config git" [...args] {
+    if ($args | is-empty) {
+        ^lazygit --path $nu.default-config-dir
+    } else {
+        ^git -C $nu.default-config-dir ...$args
+    }
+}
 
 # Edit a file relative to the config directory
 def "config edit" [...file: string] {
