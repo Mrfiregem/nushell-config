@@ -7,13 +7,10 @@ export use set/
 # > 'foo/bar/baz' | path split | step-list | to nuon
 # [[foo], [foo, bar], [foo, bar, baz]]
 export def "list step" []: list<any> -> list<list<any>> {
-    let input = $in
-    let n = $input | length
-    mut result = []
-    for i in 1..$n {
-        $result = $result | append [($input | first $i)]
+     reduce -f [] {|part,acc|
+        let item = try { $acc | last | path join $part } catch { $part }
+        $acc | append $item
     }
-    return $result
 }
 
 # Returns the index of the first element matching `value`, or -1 if there's no match.
