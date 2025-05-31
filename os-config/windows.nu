@@ -1,1 +1,1 @@
-use cmd-wrappers/scoop/
+use cmd-wrappers/scoop/ *
