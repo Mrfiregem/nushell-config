@@ -1,6 +1,7 @@
 # Configure nushell
 $env.config.show_banner = false
 $env.config.history.file_format = 'sqlite'
+$env.config.history.isolation = true
 # Set text editor
 $env.config.buffer_editor = 'nvim'
 $env.EDITOR = $env.config.buffer_editor
