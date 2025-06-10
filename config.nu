@@ -34,7 +34,6 @@ do --env {
     path add [
         {linux: ~/.local/bin, macos: ~/.local/bin, windows: ~/bin}
         ~/.cargo/bin
-        {macos: $'(^/usr/local/bin/brew --prefix rustup)/bin'}
         {macos: /usr/local/bin, linux: /usr/local/bin}
         {macos: /usr/local/sbin, linux: /usr/local/sbin}
     ]

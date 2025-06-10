@@ -1,5 +1,8 @@
 use std/util null_device
 
+# Add brew rustup to PATH
+$env.PATH = $env.PATH | prepend $'(^/usr/local/bin/brew --prefix rustup)/bin' | uniq
+
 # Update brew packages and check for issues
 def brewup [] {
     ^brew update
