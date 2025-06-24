@@ -21,7 +21,7 @@ export def union [set_b: list<any>]: list<any> -> list<any> {
 
 # Return the set of elements that are only in both set A and B
 export def intersect [set_b: list<any>]: list<any> -> list<any> {
-    filter {|e| $e in $set_b } | into set
+    where $it in $set_b | into set
 }
 
 # Check if set A and set B share no elements
@@ -31,7 +31,7 @@ export def is-disjoint-from [set_b: list<any>]: list<any> -> bool {
 
 # Return set A but with elements shared with set B removed
 export def difference [set_b: list<any>]: list<any> -> list<any> {
-    filter {|e| $e not-in $set_b } | into set
+    where $it not-in $set_b | into set
 }
 
 # COMPLEX OPERATIONS
