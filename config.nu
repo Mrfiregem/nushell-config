@@ -13,19 +13,6 @@ use std-rfc/clip
 # Load custom functions that should be builtins
 use stdplus/ *
 
-# Upload a file to a pastebin for sharing
-def "http pastebin" [file: path, extra_data: record = {}] {
-    let file_content = open --raw $file | into binary
-    let post_data = {file: $file_content} | merge $extra_data
-    http post --content-type multipart/form-data 'https://0x0.st' $post_data
-}
-
-# Download a file from the web
-def wget [--force(-f), url: string, out?: path] {
-    let filename = $out | default { $url | url parse | get path | path basename }
-    http get $url | if $force { save -f $filename } else { save $filename }
-}
-
 # Similar to pwsh's `Format-List`; view table as list of records
 def "list-view" []: any -> string { each { table } | to text }
 
