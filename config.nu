@@ -22,7 +22,7 @@ def "http pastebin" [file: path, extra_data: record = {}] {
 
 # Download a file from the web
 def wget [--force(-f), url: string, out?: path] {
-    let filename = $out | default ($url | url parse | get path | path basename)
+    let filename = $out | default { $url | url parse | get path | path basename }
     http get $url | if $force { save -f $filename } else { save $filename }
 }
 
