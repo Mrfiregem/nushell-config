@@ -1,4 +1,5 @@
 use ./util.nu 'get-path'
+export use externs.nu *
 
 export def "scoop list" [] {
     ^scoop export | from json -s
@@ -41,28 +42,3 @@ export def "scoop info" [app: string]: nothing -> table {
     | into datetime updated_at
 }
 
-export extern "scoop alias" []
-export extern "scoop bucket" []
-export extern "scoop cache" []
-export extern "scoop cat" []
-export extern "scoop checkup" []
-export extern "scoop cleanup" []
-export extern "scoop config" []
-export extern "scoop create" []
-export extern "scoop depends" []
-export extern "scoop download" []
-export extern "scoop export" []
-export extern "scoop help" []
-export extern "scoop hold" []
-export extern "scoop home" []
-export extern "scoop import" []
-export extern "scoop install" []
-export extern "scoop prefix" []
-export extern "scoop reset" []
-export extern "scoop shim" []
-export extern "scoop status" []
-export extern "scoop unhold" []
-export extern "scoop uninstall" []
-export extern "scoop update" []
-export extern "scoop virustotal" []
-export extern "scoop which" []
