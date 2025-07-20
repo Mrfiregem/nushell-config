@@ -14,14 +14,12 @@ def --wrapped "config git" [...args] {
 }
 
 def 'nu-complete config-files' [] {
-    [$nu.default-config-dir '**' '*.nu'] | path join
-    | str replace -a '\' '/'
-    | glob $in
-    | path relative-to $nu.default-config-dir
+    cd $nu.default-config-dir
+    glob **/*.nu | path relative-to $nu.default-config-dir
 }
 
 # Edit a file relative to the config directory
-def "config edit" [file: path@'nu-complete config-files'] {
+def "config edit" [file: string@'nu-complete config-files'] {
     let editor = $env.config.buffer_editor? | default $env.EDITOR? | default 'nvim'
     ^$editor ($nu.default-config-dir | path join $file)
 }
