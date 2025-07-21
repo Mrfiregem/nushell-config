@@ -24,10 +24,10 @@ def "path fishify" []: string -> string {
 }
 
 $env.PROMPT_COMMAND = {
-    let duration = $env.CMD_DURATION_MS | into int | into duration --unit ms
+    let duration = $env.CMD_DURATION_MS | into int | $in * 1_000_000 | into duration
 
     $'(ansi cyan_bold)($env.PWD | path fishify)(ansi reset)'
-    | if $duration > 2sec { $in ++ $' ◎ (ansi yellow)($duration | format duration sec)' } else {} 
+    | if $duration > 2sec { $in ++ $' ◎ (ansi yellow)($duration)' } else {} 
 }
 
 $env.PROMPT_INDICATOR = {
@@ -35,5 +35,12 @@ $env.PROMPT_INDICATOR = {
 }
 
 $env.PROMPT_COMMAND_RIGHT = {||
-    $'(ansi light_red_italic)(date now | format date "%I:%M %p")(ansi reset)'
+    let git_branch = (^git branch --show-current | complete).stdout | str trim
+    if $git_branch != "" {
+        let status = ^git status --porcelain | complete
+        if $status.exit_code == 0 and $status.stdout != "" { $git_branch ++ '*' } else { $git_branch }
+    } else { $git_branch }
+    | append $'(ansi light_blue)(date now | format date "%I:%M %p")(ansi reset)'
+    | compact -e
+    | str join $'(ansi reset) ◎ '
 }
