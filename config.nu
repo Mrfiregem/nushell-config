@@ -1,0 +1,35 @@
+$env.config.history.file_format = 'sqlite'
+$env.config.history.isolation = true
+
+$env.config.buffer_editor = 'nvim'
+$env.VISUAL = 'nvim'
+
+$env.config.show_banner = false
+
+# Return the first non-null list element, otherwise a default value
+def first-else [default: any]: list<any> -> any {
+  append $default | compact | first
+}
+
+# `cd` but read path from stdin
+def --env cdl [postfix?: path]: oneof<path, nothing> -> nothing {
+  append $postfix
+  | if $in == [] { $nu.home-dir } else { path join }
+  | cd $in
+}
+
+# Edit files with the user's configured text editor
+def edit [
+  --nvim(-v) # Interpret path relative to nvim's config directory
+  --nushell(-n) # Interpret path relative to nushell's config directory
+  file: path
+]: nothing -> nothing {
+  let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?] | first-else 'vi'
+  let prefix = if $nvim {
+    ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in
+  } else if $nushell {
+    $nu.default-config-dir
+  } else { '' }
+
+  ^$editor ([$prefix, $file] | path join)
+}
