@@ -33,3 +33,5 @@ def edit [
 
   ^$editor ([$prefix, $file] | path join)
 }
+
+$env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in }
