@@ -11,11 +11,14 @@ def first-else [default: any]: list<any> -> any {
   append $default | compact | first
 }
 
-# `cd` but read path from stdin
-def --env cdl [postfix?: path]: oneof<path, nothing> -> nothing {
+# `cd` to the directory provided by stdin
+def --env cdl [
+  --physical(-p) # Resolve symbolic links
+  ...postfix: path # Additional paths to append to input
+]: oneof<path, nothing> -> nothing {
   append $postfix
   | if $in == [] { $nu.home-dir } else { path join }
-  | cd $in
+  | cd --physical=$physical $in
 }
 
 # Edit files with the user's configured text editor
