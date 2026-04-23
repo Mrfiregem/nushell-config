@@ -6,6 +6,9 @@ $env.VISUAL = 'nvim'
 
 $env.config.show_banner = false
 
+# Disable creating `~/.lesshist`
+$env.LESSHISTFILE = '-'
+
 # Return the first non-null list element, otherwise a default value
 def first-else [default: any]: list<any> -> any {
   append $default | compact | first
