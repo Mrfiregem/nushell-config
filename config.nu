@@ -24,6 +24,10 @@ def --env cdl [
   | cd --physical=$physical $in
 }
 
+def --env mkcd [path: path]: nothing -> nothing {
+  mkdir $path; cd $path
+}
+
 # Edit files with the user's configured text editor
 def edit [
   --nvim(-v) # Interpret path relative to nvim's config directory
