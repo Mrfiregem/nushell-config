@@ -1,7 +1,8 @@
 # A module to perform simple set operations on lists.
 #
-# Since Nushell doesn't have a Set datatype, this module uses normalized lists instead, and
-# all commands assume lists have been run through `set from-list` prior to being passed in.
+# Since Nushell doesn't have a Set datatype, this module uses normalized lists instead.
+# All commands assume inputs have been run through `set from-list` at some point prior
+# to being passed in, but most can handle any type of list.
 
 # --- Basic Operations
 
@@ -57,8 +58,8 @@ export def compliment []: list<any> -> list<any> {
 
 # Return each ordered pair (a, b), the Cartesian product, of set A and set B. (A × B)
 @example 'Multiply two sets' { seq 1 3 | set product (seq char a b) | to nuon } --result '[[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]]'
-export def product [set_b: list<any>]: list<any> -> list<list<any>> {
-    reduce -f [] {|i| append ($set_b | reduce -f [] {|j| append [[$i, $j]] }) }
+export def product [set_b: list<any>]: list<any> -> list<any> {
+    each --flatten {|i| $set_b | each {|j| [$i,$j] } }
 }
 
 # --- Numeric Operations
