@@ -1,3 +1,7 @@
+# Import useful std modules
+use std/bench
+use std-rfc/iter [only]
+
 $env.config.history.file_format = 'sqlite'
 $env.config.history.isolation = true
 
