@@ -1,18 +1,18 @@
 # Module providing externs for scoop commands, or structured data wrappers when applicable.
 
-use winutils\ [run-powershell]
+use winutils\pwsh.nu [run-powershell]
 use std-rfc\kv ['kv get', 'kv set']
 
 # Update apps, or Scoop itself
 export extern update [
-    --force(-f) # Force update even at newest version
-    --global(-f) # Update a globally installed app
-    --independent(-i) # Don't auto-install dependencies
-    --no-cache(-k) # Don't use the download cache
-    --skip-hash-check(-s) # Skip hash validation
-    --quiet(-q) # Hide extraneous messages
-    --all(-a) # Update all apps (alternative to '*')
-    app?: string
+  --force(-f) # Force update even at newest version
+  --global(-f) # Update a globally installed app
+  --independent(-i) # Don't auto-install dependencies
+  --no-cache(-k) # Don't use the download cache
+  --skip-hash-check(-s) # Skip hash validation
+  --quiet(-q) # Hide extraneous messages
+  --all(-a) # Update all apps (alternative to '*')
+  app?: string
 ]
 
 # Add a scoop alias
@@ -192,9 +192,9 @@ export def search [query: string@comp-searched]: nothing -> table {
 
 # Add a custom scoop shim
 export extern 'shim add' [
-    name: string,
-    command_path: path,
-    ...args
+  name: string,
+  command_path: path,
+  ...args
 ]
 
 # Remove scoop shims
@@ -202,15 +202,15 @@ export extern 'shim rm' [...name: string]
 
 # List scoop shims
 export def 'shim list' [...pattern: string]: nothing -> table<name: string, source: string> {
-    run-powershell -a {pats: ($pattern | default [])} -r '$x = $Nu.pats; scoop shim list @x | % { ConvertTo-Json -Compress $_ }'
-    | from json --objects --strict
-    | rename -b { str snake-case }
+  run-powershell -a {pats: ($pattern | default [])} -r '$x = $Nu.pats; scoop shim list @x | % { ConvertTo-Json -Compress $_ }'
+  | from json --objects --strict
+  | rename -b { str snake-case }
 }
 
 # Show information about a shim
 export def 'shim info' [app: string@comp-searched]: nothing -> record {
-    run-powershell -a {app: $app} 'scoop shim info $Nu.app'
-    | rename -b { str snake-case }
+  run-powershell -a {app: $app} 'scoop shim info $Nu.app'
+  | rename -b { str snake-case }
 }
 
 # Alter a shim's target source
@@ -218,39 +218,39 @@ export extern 'shim alter' [name: string]
 
 # Show status and check for new app versions
 export def status [
-    --local(-l) # Only check installed apps, disables fetching updates
-]: nothing -> table {
-    run-powershell $'scoop status (if $local { "--local" })'
-    | rename -c {
-        Name: name,
-        'Installed Version': current,
-        'Latest Version': latest,
-        'Missing Dependencies': new_deps,
-        Info: info
-    }
+  --local(-l) # Only check installed apps, disables fetching updates
+]: nothing -> table<name: string, current: string, latest: string> {
+  run-powershell $'scoop status (if $local { "--local" }) 6>$null'
+  | rename -c {
+    Name: name
+    'Installed Version': current
+    'Latest Version': latest
+    'Missing Dependencies': new_deps
+    Info: info
+  }
 }
 
 # Unhold an app to enable updates
 export extern unhold [
-    --global(-g) # Unhold a globally installed app
-    app: string@comp-installed
+  --global(-g) # Unhold a globally installed app
+  app: string@comp-installed
 ]
 
 # Uninstall an app
 export extern uninstall [
-    --global(-g) # Uninstall a globally installed app
-    --purge(-p) # Remove persistent data
-    app: string@comp-installed
+  --global(-g) # Uninstall a globally installed app
+  --purge(-p) # Remove persistent data
+  app: string@comp-installed
 ]
 
 # Look for app's hash or url on virustotal.com
 export extern virustotal [
-    --all(-a) # Check all installed apps
-    --scan(-s) # Let Virustotal scan app if not in its database
-    --no-depends(-n) # Don't check dependencies
-    --no-update-scoop(-u) # Don't update scoop before checking
-    --passthru(-p) # Return reports as objects
-    ...app: string@comp-installed
+  --all(-a) # Check all installed apps
+  --scan(-s) # Let Virustotal scan app if not in its database
+  --no-depends(-n) # Don't check dependencies
+  --no-update-scoop(-u) # Don't update scoop before checking
+  --passthru(-p) # Return reports as objects
+  ...app: string@comp-installed
 ]
 
 # Locate a shim/executable (similar to 'which' on Linux)
@@ -260,13 +260,13 @@ export extern which [command: string]
 # --- Completions
 
 def get-or-set [key: string, fallback: closure] {
-    kv get -t 'scoopextern' $key | default { do $fallback | kv set -t 'scoopextern' $key }
+  kv get -t 'scoopextern' $key | default { do $fallback | kv set -t 'scoopextern' $key }
 }
 
 def comp-installed [] { get-or-set 'installed' { list | get name } }
 def comp-searched [ctx: string] {
-    let query = $ctx | split row ' ' | last | str trim
-    if ($query | is-not-empty) {
-        search $query | get name
-    }
+  let query = $ctx | split row ' ' | last | str trim
+  if ($query | is-not-empty) {
+    search $query | get name
+  }
 }
