@@ -32,8 +32,9 @@ def --env mkcd [path: path]: nothing -> nothing {
 def edit [
   --nvim(-v) # Interpret path relative to nvim's config directory
   --nushell(-n) # Interpret path relative to nushell's config directory
-  file: path
-]: nothing -> nothing {
+  file?: path
+]: oneof<nothing, string> -> nothing {
+  append $file | get 0? | default '' | let file
   let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?] | first-else 'vi'
   let prefix = if $nvim {
     ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in
@@ -41,7 +42,10 @@ def edit [
     $nu.default-config-dir
   } else { '' }
 
-  ^$editor ([$prefix, $file] | path join)
+  match ([$prefix, $file] | path join) {
+    '' => { ^$editor }
+    $path => { ^$editor $path }
+  }
 }
 
 $env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in }
