@@ -62,6 +62,19 @@ export def product [set_b: list<any>]: list<any> -> list<any> {
     each --flatten {|i| $set_b | each {|j| [$i,$j] } }
 }
 
+# Given a record of sets, return a table containing all possible combinations of sets. (Credit: fdncred)
+@example 'Multiply record sets' { {colors: [red blue green], sizes: [small large]} | set map-product } --result [[colors, sizes]; [red, small], [red, large], [blue, small], [blue, large], [green, small], [green, large]]
+export def map-product []: record -> list<record> {
+    transpose key values
+    | reduce --fold {} {|col|
+        each --flatten {|base|
+            $col.values | each {|v|
+                $base | upsert $col.key $v
+            }
+        }
+    }
+}
+
 # --- Numeric Operations
 
 # Return the set of all possible sums (a + b) for each ordered pair (a, b) from the product of sets A and B.
@@ -77,4 +90,3 @@ export def addition [set_b: list<number>]: list<number> -> list<number> {
 export def subtraction [set_b: list<number>]: list<number> -> list<number> {
     addition ($set_b | each { $in * -1 })
 }
-
