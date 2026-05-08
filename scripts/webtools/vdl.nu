@@ -1,3 +1,5 @@
+# yt-dlp wrapper to save files to specific directories
+
 # Interactively provide urls using text editor
 def interactive-vdl [cmd: list<string>]: nothing -> nothing {
   let editor = $env | get -o $.config.buffer_editor $.VISUAL $.EDITOR | append 'vi' | compact | first
@@ -15,6 +17,7 @@ def interactive-vdl [cmd: list<string>]: nothing -> nothing {
 export def main [
   url?: string # The video to download, if not given through stdin
   title?: string # If `url` is the only video provided, name the file this (exluding extension)
+  --force-mp4(-m) # Convert all videos to H.264 AAC mp4 files
 ]: [nothing -> nothing, string -> nothing, list<string> -> nothing] {
   append $url | let urls
 
@@ -24,6 +27,7 @@ export def main [
   if $dlcmd == null { error make -u '`yt-dlp` is not installed or is missing from PATH.' }
 
   let cmd = [$dlcmd, '-P', $outdir]
+  | if $force_mp4 { append ['--use-postprocessor' 'FFmpegCopyStream' '--ppa' 'CopyStream:-c:v libx264 -c:a aac -f mp4'] } else {}
 
   match $urls {
     [] => { interactive-vdl $cmd }
