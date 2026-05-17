@@ -2,6 +2,8 @@
 use std/bench
 use std-rfc/iter [only]
 
+use prompt.nu # Set left and right prompts
+
 $env.config.history.file_format = 'sqlite'
 $env.config.history.isolation = true
 
