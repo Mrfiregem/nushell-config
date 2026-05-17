@@ -240,7 +240,7 @@ export extern unhold [
 export extern uninstall [
   --global(-g) # Uninstall a globally installed app
   --purge(-p) # Remove persistent data
-  app: string@comp-installed
+  ...app: string@comp-installed
 ]
 
 # Look for app's hash or url on virustotal.com
