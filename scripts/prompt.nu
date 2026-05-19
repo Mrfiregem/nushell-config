@@ -13,7 +13,7 @@ def git-info []: nothing -> record<in-repo: bool, is-dirty: bool, branch: string
         {
             in-repo: true
             is-dirty: (^git status --porcelain | is-not-empty)
-            branch: (^git branch --show-current)
+            branch: (^git rev-parse --abbrev-ref HEAD)
         }
     } else {
         {in-repo: false, is-dirty: false, branch: ''}
@@ -37,12 +37,24 @@ export-env {
         | path join
     }
 
+    $env.PROMPT_INDICATOR = {||
+        let code = $env.LAST_EXIT_CODE
+        let sigil = $'(if (is-admin) { ansi light_red } else { ansi light_cyan })>(ansi reset) '
+
+        $sigil
+        | if $code != 0 { prepend $'(ansi default)[(ansi red_bold)($code)(ansi reset)]' } else {}
+        | str join
+    }
+
     $env.PROMPT_COMMAND_RIGHT = {||
         let g = git-info
         if $g.in-repo {
-            date now | format date '%F %r' | append $'($g.branch)(if $g.is-dirty {"*"})' | str join ' | '
+            date now | format date $'(ansi green)%F %r'
+            | str replace -ra '([:\-]|[AP]M)' $'(ansi yellow)$1(ansi reset_dimmed)(ansi green)'
+            | append $'($g.branch)(if $g.is-dirty {"*"})' | str join ' | '
         } else {
-            date now | format date '%F %r'
+            date now | format date $'(ansi green)%F %r'
+            | str replace -ra '([:\-]|[AP]M)' $'(ansi yellow)$1(ansi reset_dimmed)(ansi green)'
         }
     }
 }
