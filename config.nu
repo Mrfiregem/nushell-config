@@ -17,41 +17,41 @@ $env.LESSHISTFILE = '-'
 
 # Return the first non-null list element, otherwise a default value
 def first-else [default: any]: list<any> -> any {
-  append $default | compact | first
+    append $default | compact | first
 }
 
 # `cd` to the directory provided by stdin
 def --env cdl [
-  --physical(-p) # Resolve symbolic links
-  ...postfix: path # Additional paths to append to input
+    --physical(-p) # Resolve symbolic links
+    ...postfix: path # Additional paths to append to input
 ]: oneof<path, nothing> -> nothing {
-  append $postfix
-  | if $in == [] { $nu.home-dir } else { path join }
-  | cd --physical=$physical $in
+    append $postfix
+    | if $in == [] { $nu.home-dir } else { path join }
+    | cd --physical=$physical $in
 }
 
 def --env mkcd [path: path]: nothing -> nothing {
-  mkdir $path; cd $path
+    mkdir $path; cd $path
 }
 
 # Edit files with the user's configured text editor
 def edit [
-  --nvim(-v) # Interpret path relative to nvim's config directory
-  --nushell(-n) # Interpret path relative to nushell's config directory
-  file?: path
+    --nvim(-v) # Interpret path relative to nvim's config directory
+    --nushell(-n) # Interpret path relative to nushell's config directory
+    file?: path
 ]: oneof<nothing, string> -> nothing {
-  append $file | get 0? | default '' | let file
-  let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?] | first-else 'vi'
-  let prefix = if $nvim {
-    ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in
-  } else if $nushell {
-    $nu.default-config-dir
-  } else { '' }
+    append $file | get 0? | default '' | let file
+    let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?] | first-else 'vi'
+    let prefix = if $nvim {
+        ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in
+    } else if $nushell {
+        $nu.default-config-dir
+    } else { '' }
 
-  match ([$prefix, $file] | path join) {
-    '' => { ^$editor }
-    $path => { ^$editor $path }
-  }
+    match ([$prefix, $file] | path join) {
+        '' => { ^$editor }
+        $path => { ^$editor $path }
+    }
 }
 
 $env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in }
