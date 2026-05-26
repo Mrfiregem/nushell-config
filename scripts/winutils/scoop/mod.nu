@@ -222,6 +222,7 @@ export def status [
     --local(-l) # Only check installed apps, disables fetching updates
 ]: nothing -> table<name: string, current: string, latest: string> {
     run-powershell $'scoop status (if $local { "--local" }) 6>$null'
+    | if ($in | is-empty) { return [] } else {}
     | rename -c {
         Name: name
         'Installed Version': current
