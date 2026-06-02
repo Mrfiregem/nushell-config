@@ -4,6 +4,8 @@
 # All commands assume inputs have been run through `set from-list` at some point prior
 # to being passed in, but most can handle any type of list.
 
+use std-rfc/iter prod
+
 # --- Basic Operations
 
 # Transform a list into a set for use in other module functions.
@@ -58,21 +60,16 @@ export def compliment []: list<any> -> list<any> {
 
 # Return each ordered pair (a, b), the Cartesian product, of set A and set B. (A × B)
 @example 'Multiply two sets' { seq 1 3 | set product (seq char a b) | to nuon } --result '[[1, a], [1, b], [2, a], [2, b], [3, a], [3, b]]'
-export def product [set_b: list<any>]: list<any> -> list<any> {
-    each --flatten {|i| $set_b | each {|j| [$i,$j] } }
-}
-
-# Given a record of sets, return a table containing all possible combinations of sets. (Credit: fdncred)
-@example 'Multiply record sets' { {colors: [red blue green], sizes: [small large]} | set map-product } --result [[colors, sizes]; [red, small], [red, large], [blue, small], [blue, large], [green, small], [green, large]]
-export def map-product []: record -> list<record> {
-    transpose key values
-    | reduce --fold {} {|col|
-        each --flatten {|base|
-            $col.values | each {|v|
-                $base | upsert $col.key $v
-            }
-        }
+export def product [...set_b: list<any>]: list<any> -> list<any> {
+    [$in, ...$set_b] | let $sets
+    if ($sets | length) < 2 { error make -u 'Must provide at least 2 sets.' }
+    mut col = 0
+    mut rec = {}
+    for set in $sets {
+        $rec = $rec | insert $'($col)' $set
+        $col += 1
     }
+    prod $rec | transpose --ignore-titles | values
 }
 
 # --- Numeric Operations
