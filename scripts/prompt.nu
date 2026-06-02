@@ -49,12 +49,12 @@ export-env {
     $env.PROMPT_COMMAND_RIGHT = {||
         let g = git-info
         if $g.in-repo {
-            date now | format date $'(ansi green)%F %r'
+            date now | format date $'(ansi green)%r'
             | str replace -ra '([:\-]|[AP]M)' $'(ansi yellow)$1(ansi reset_dimmed)(ansi green)'
             | append $'(ansi light_magenta)($g.branch)(if $g.is-dirty {"*"})(ansi reset)'
             | str join $'(ansi default) | '
         } else {
-            date now | format date $'(ansi green)%F %r'
+            date now | format date $'(ansi green)%r'
             | str replace -ra '([:\-]|[AP]M)' $'(ansi yellow)$1(ansi reset_dimmed)(ansi green)'
         }
     }
