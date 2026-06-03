@@ -12,6 +12,8 @@ $env.VISUAL = 'nvim'
 
 $env.config.show_banner = false
 
+$env.config.color_config.shape_externalarg = 'green'
+
 # Disable creating `~/.lesshist`
 $env.LESSHISTFILE = '-'
 
