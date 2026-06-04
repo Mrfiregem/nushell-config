@@ -1,0 +1,33 @@
+# Module to work with pacman
+
+# List installed packages
+export def list [query?: string]: nothing -> table<name: string, version: string> {
+    ^pacman -Q | lines | parse '{name} {version}'
+    | if $query != null { where name like $query } else {}
+}
+
+# Search available packages
+export def search [
+    --aur(-a) # Include aur packages (requires pacman wrapper)
+    query: string
+]: nothing -> table {
+    let pacwrapper = which '^paru' '^yay' | get 0?.path
+    if $aur and $pacwrapper != null {
+        ^$pacwrapper -Ss $query
+    } else if $aur {
+        error make {
+            msg: 'Passed `--aur` but did not find a suitable pacman wrapper'
+            labels: [{text: 'Remove this flag', span: (metadata $aur).span}]
+        }
+    } else {
+        ^pacman -Ss $query
+    }
+    | lines
+    | split list --split before { $in like '^\S' }
+    | skip 1
+    | each {|x|
+        $x.0 | parse '{repo}/{name} {meta}'
+        | only | insert desc { $x.1 | str trim | str join ' ' }
+    }
+    | move --after name desc meta repo
+}

@@ -58,5 +58,5 @@ def edit [
 
 $env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in }
 
-const osutils = if $nu.os-info.name == 'windows' { 'winutils' }
+const osutils = if $nu.os-info.name == 'windows' { 'winutils' } else if $nu.os-info.name == 'linux' { 'archutils' }
 use $osutils *
