@@ -1,8 +1,18 @@
 # Module to work with pacman
 
+use std-rfc/kv ['kv get', 'kv set']
+
+def get-wrapper [] {
+    kv get -t pac wrapper | default { which '^paru' '^yay' | get 0?.path | kv set -t pac wrapper }
+}
+
 # List installed packages
-export def list [query?: string]: nothing -> table<name: string, version: string> {
-    ^pacman -Q | lines | parse '{name} {version}'
+export def list [
+    --orphans(-o) # Show packages installed as dependencies that are no longer needed
+    query?: string # Filter output by package name
+]: nothing -> table<name: string, version: string> {
+    let cmd = [pacman -Q] | if $orphans { append '-dt' } else {}
+    ^$cmd | lines | parse '{name} {version}'
     | if $query != null { where name like $query } else {}
 }
 
@@ -11,7 +21,7 @@ export def search [
     --aur(-a) # Include aur packages (requires pacman wrapper)
     query: string
 ]: nothing -> table {
-    let pacwrapper = which '^paru' '^yay' | get 0?.path
+    let pacwrapper = get-wrapper
     if $aur and $pacwrapper != null {
         ^$pacwrapper -Ss $query
     } else if $aur {
@@ -31,3 +41,11 @@ export def search [
     }
     | move --after name desc meta repo
 }
+
+# Update packages
+export def update []: nothing -> nothing {
+    let pacman = get-wrapper | default 'pacman'
+    ^$pacman -Syu
+}
+
+export alias upgrade = update
