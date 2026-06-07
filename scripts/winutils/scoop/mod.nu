@@ -230,6 +230,7 @@ export def status [
         'Missing Dependencies': new_deps
         Info: info
     }
+    | append null
 }
 
 # Unhold an app to enable updates
