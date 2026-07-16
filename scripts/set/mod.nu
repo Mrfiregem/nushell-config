@@ -1,36 +1,10 @@
 # A module to perform simple set operations on lists.
 #
-# Since Nushell doesn't have a Set datatype, this module uses normalized lists instead.
-# All commands assume inputs have been run through `set from-list` at some point prior
-# to being passed in, but most can handle any type of list.
+# Nushell recently added a collection of set commands, so this just fills them out.
 
 use std-rfc/iter prod
 
 # --- Basic Operations
-
-# Transform a list into a set for use in other module functions.
-@example 'Convert a list to a set' { [b c c a] | set from-list } --result [a b c]
-export def from-list []: list<any> -> list<any> { sort | uniq }
-
-# Return the set of elements of set A that are also present in set B. (A ∩ B)
-@example 'Find the intersection' { seq 1 12 | set intersect (seq 8 24) } --result [8 9 10 11 12]
-export def intersect [set_b: list<any>]: list<any> -> list<any> {
-    wrap item
-    | join ($set_b | wrap item) item # from discord: faster than `where` check for large inputs
-    | get item
-}
-
-# Return the set of elements in both set A and set B. (A ∪ B)
-@example 'Join two sets' { seq 1 3 | set union (seq 4 6) } --result [1 2 3 4 5 6]
-export def union [set_b: list<any>]: list<any> -> list<any> {
-    append $set_b | from-list
-}
-
-# Return the set of all elements of set A not in set B. (A - B)
-@example 'Find the difference' { seq 1 10 | set difference (seq 1 8) } --result [9 10]
-export def difference [set_b: list<any>]: list<any> -> list<any> {
-    where $it not-in $set_b
-}
 
 # Return the set of all set A elements not in set B, and all set B elements not in set A.
 @example 'Find the symmetric difference' { seq 1 4 | set symdiff (seq 2 6) } --result [1 5 6]
