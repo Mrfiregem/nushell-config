@@ -60,3 +60,30 @@ $env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 
 
 const osutils = if $nu.os-info.name == 'windows' { 'winutils' }
 use $osutils *
+
+# Limit a numerical value between an upper and/or lower bound
+def clamp [
+    --min(-M): oneof<number,duration,filesize,datetime> # Minimum allowed value
+    --max(-m): oneof<number,duration,filesize,datetime> # Maximum allowed value
+]: [
+    number -> number
+    duration -> duration
+    filesize -> filesize
+    datetime -> datetime
+    range -> list<number>
+    list<number> -> list<number>
+    list<duration> -> list<duration>
+    list<filesize> -> list<filesize>
+    list<datetime> -> list<datetime>
+] {
+    each {|num|
+        match [$min, $max] {
+            [null, null] => {error make -u {
+                msg: 'Must include provide at least a `--min` or `--max` value'
+            }}
+            [$min, null] => { if $num < $min { $min } else { $num } }
+            [null, $max] => { if $num > $max { $max } else { $num } }
+            [$min, $max] => { if $num > $max { $max } else if $num < $min { $min } else { $num } }
+        }
+    }
+}
