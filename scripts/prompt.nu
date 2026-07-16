@@ -13,7 +13,7 @@ def git-info []: nothing -> record<in-repo: bool, is-dirty: bool, branch: string
         {
             in-repo: true
             is-dirty: (^git status --porcelain | is-not-empty)
-            branch: (^git rev-parse --abbrev-ref HEAD)
+            branch: (try { ^git rev-parse --abbrev-ref HEAD e> $null_device } | default '<unknown>')
         }
     } else {
         {in-repo: false, is-dirty: false, branch: ''}
