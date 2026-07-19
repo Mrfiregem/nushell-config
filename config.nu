@@ -86,4 +86,10 @@ def clamp [
             [$min, $max] => { if $num > $max { $max } else if $num < $min { $min } else { $num } }
         }
     }
+
+# Open a web search through its DuckDuckGo bang
+def bang [code: string, ...query: string]: nothing -> nothing {
+    use std-rfc/url with-params
+    let q = $'!($code)' | append $query | str join ' '
+    start ('https://duckduckgo.com' | with-params {q: $q})
 }
