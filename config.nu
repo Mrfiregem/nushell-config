@@ -63,29 +63,29 @@ use $osutils *
 
 # Limit a numerical value between an upper and/or lower bound
 def clamp [
-    --min(-M): oneof<number,duration,filesize,datetime> # Minimum allowed value
-    --max(-m): oneof<number,duration,filesize,datetime> # Maximum allowed value
+    bounds: list<oneof<number,duration,filesize,datetime, nothing>> # Minimum allowed value
 ]: [
     number -> number
     duration -> duration
     filesize -> filesize
     datetime -> datetime
-    range -> list<number>
-    list<number> -> list<number>
-    list<duration> -> list<duration>
-    list<filesize> -> list<filesize>
-    list<datetime> -> list<datetime>
 ] {
-    each {|num|
-        match [$min, $max] {
-            [null, null] => {error make -u {
-                msg: 'Must include provide at least a `--min` or `--max` value'
-            }}
-            [$min, null] => { if $num < $min { $min } else { $num } }
-            [null, $max] => { if $num > $max { $max } else { $num } }
-            [$min, $max] => { if $num > $max { $max } else if $num < $min { $min } else { $num } }
-        }
+    let input
+    # $max's span will be the call span if it isn't provided
+    let bounds = match $bounds {
+        [$max] => {lower: null, upper: $max}
+        [$min, $max] => {lower: $min, upper: $max}
+        _ => { error make -u 'Bounds must be provided in the form `[$max]` or `[$min $max]`' }
     }
+    print $bounds
+    if $bounds.lower != null and $input < $bounds.lower {
+        $bounds.lower
+    } else if $bounds.upper != null and $input > $bounds.upper {
+        $bounds.upper
+    } else {
+        $input
+    }
+}
 
 # Open a web search through its DuckDuckGo bang
 def bang [code: string, ...query: string]: nothing -> nothing {
