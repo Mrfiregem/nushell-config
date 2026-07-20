@@ -15,7 +15,7 @@ export def run-powershell [
 ]: any -> any {
     default null | wrap 'stdin' | merge $args | let $args
 
-    let shell = which ^pwsh ^powershell | if $legacy { try { last | get $.path? } } else { get $.0?.path }
+    let shell = %which ^pwsh ^powershell | if $legacy { try { last | get $.path? } } else { get $.0?.path }
     if $shell == null { error make -u "Couldn't find Powershell on PATH." }
 
     let script = [

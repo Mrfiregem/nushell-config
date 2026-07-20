@@ -1,6 +1,6 @@
-export use pwsh.nu [run-powershell]
-export use scoop
-export use winget
+export use ./pwsh.nu [run-powershell]
+export use ./scoop
+export use ./winget
 
 # Interactively update apps managed by `winget`
 export def winup []: nothing -> nothing {

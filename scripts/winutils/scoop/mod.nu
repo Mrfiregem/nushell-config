@@ -1,7 +1,7 @@
 # Module providing externs for scoop commands, or structured data wrappers when applicable.
 
-use winutils\pwsh.nu [run-powershell]
-use std-rfc\kv ['kv get', 'kv set']
+use winutils/pwsh.nu [run-powershell]
+use std-rfc/kv ['kv get', 'kv set']
 
 # Update apps, or Scoop itself
 export extern update [
@@ -28,7 +28,7 @@ export extern 'alias rm' [name: string]
 # List scoop aliases
 export def 'alias list' []: nothing -> table<name: string, command: string, summary: string> {
     run-powershell 'scoop alias list --verbose' | append []
-    | rename -b { str downcase }
+    | rename -b { str lowercase }
 }
 
 # Add a bucket
@@ -48,7 +48,7 @@ export def 'bucket known' []: nothing -> list<string> {
 # List enabled buckets
 export def 'bucket list' []: nothing -> table<name: string, source: string, updated: datetime, manifests: int> {
     ^scoop export | from json -s
-    | get $.buckets | rename -b { str downcase }
+    | get $.buckets | rename -b { str lowercase }
     | into datetime 'updated'
 }
 
@@ -102,7 +102,7 @@ export extern create [url: string]
 # List dependencies for an app, in the order they'll be installed
 export def depends [app: string@comp-searched]: nothing -> table<source: string, name: string> {
     run-powershell -a {app: $app} 'scoop depends $Nu.app' | append []
-    | rename -b { str downcase }
+    | rename -b { str lowercase }
 }
 
 # Download apps in the cache folder and verify hashes
@@ -167,7 +167,7 @@ export def list []: [
     ^scoop export
     | from json --strict
     | get $.apps
-    | rename -b { str downcase }
+    | rename -b { str lowercase }
     | into datetime $.updated
     | move --after name version source updated info
 }
@@ -186,7 +186,7 @@ export def search [query: string@comp-searched]: nothing -> table {
     let cmd = 'scoop search $Nu.query 6>$null | ForEach-Object { ConvertTo-Json $_ -Compress }'
     run-powershell -a {query: $query} -r $cmd
     | from json -os
-    | rename -b { str downcase }
+    | rename -b { str lowercase }
     | %update $.binaries { if $in != '' { split row ' | ' } }
 }
 

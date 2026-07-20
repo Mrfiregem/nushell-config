@@ -1,6 +1,6 @@
 # Wrapper around `winget` to return nu datatypes when applicable
 
-use winutils\pwsh.nu [run-powershell]
+use winutils/pwsh.nu [run-powershell]
 
 # List installed apps
 export def list [
