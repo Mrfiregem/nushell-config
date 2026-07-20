@@ -8,7 +8,7 @@ $env.config.history.file_format = 'sqlite'
 $env.config.history.isolation = true
 
 $env.config.buffer_editor = 'nvim'
-$env.VISUAL = 'nvim'
+{} | default $env.config.buffer_editor 'VISUAL' 'EDITOR' | load-env
 
 $env.config.show_banner = false
 
