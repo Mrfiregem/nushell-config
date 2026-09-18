@@ -12,15 +12,15 @@ $env.config.buffer_editor = 'nvim'
 
 $env.config.show_banner = false
 
-$env.config.color_config.shape_externalarg = 'green'
+$env.config.highlight_resolved_externals = true
 
 # Disable creating `~/.lesshist`
 $env.LESSHISTFILE = '-'
 
-# Return the first non-null list element, otherwise a default value
-def first-else [default: any]: list<any> -> any {
-    append $default | compact | first
-}
+# Save the last 10 unique directories in `$env.CD_HIST`
+$env.config.hooks.env_change.PWD = [{|before|
+    $env.CD_HIST = $env.CD_HIST? | prepend $before | uniq | first 10
+}]
 
 # `cd` to the directory provided by stdin
 def --env cdl [
@@ -32,59 +32,9 @@ def --env cdl [
     | cd --physical=$physical $in
 }
 
+# Create a new directory and navigate to it
 def --env mkcd [path: path]: nothing -> nothing {
     mkdir $path; cd $path
-}
-
-# Edit files with the user's configured text editor
-def edit [
-    --nvim(-v) # Interpret path relative to nvim's config directory
-    --nushell(-n) # Interpret path relative to nushell's config directory
-    file?: path
-]: oneof<nothing, string> -> nothing {
-    append $file | get 0? | default '' | let file
-    let editor = [$env.config.buffer_editor?, $env.VISUAL?, $env.EDITOR?] | first-else 'vi'
-    let prefix = if $nvim {
-        ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in
-    } else if $nushell {
-        $nu.default-config-dir
-    } else { '' }
-
-    match ([$prefix, $file] | path join) {
-        '' => { ^$editor }
-        $path => { ^$editor $path }
-    }
-}
-
-$env.NVIM_DIR = do -i { ^nvim --headless --clean -c 'echo stdpath("config")' -c 'exit' e>| $in }
-
-const osutils = if $nu.os-info.name == 'windows' { 'winutils' }
-use $osutils *
-
-# Limit a numerical value between an upper and/or lower bound
-def clamp [
-    bounds: list<oneof<number,duration,filesize,datetime, nothing>> # Minimum allowed value
-]: [
-    number -> number
-    duration -> duration
-    filesize -> filesize
-    datetime -> datetime
-] {
-    let input
-    # $max's span will be the call span if it isn't provided
-    let bounds = match $bounds {
-        [$max] => {lower: null, upper: $max}
-        [$min, $max] => {lower: $min, upper: $max}
-        _ => { error make -u 'Bounds must be provided in the form `[$max]` or `[$min $max]`' }
-    }
-    print $bounds
-    if $bounds.lower != null and $input < $bounds.lower {
-        $bounds.lower
-    } else if $bounds.upper != null and $input > $bounds.upper {
-        $bounds.upper
-    } else {
-        $input
-    }
 }
 
 # Open a web search through its DuckDuckGo bang
@@ -93,3 +43,7 @@ def bang [code: string, ...query: string]: nothing -> nothing {
     let q = $'!($code)' | append $query | str join ' '
     start ('https://duckduckgo.com' | with-params {q: $q})
 }
+
+# Load extra configuration based on OS
+const osutils = if $nu.os-info.name == 'windows' { 'winutils' }
+use $osutils *

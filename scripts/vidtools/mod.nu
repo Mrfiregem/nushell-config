@@ -52,7 +52,7 @@ export def compress [
             $input
             | path parse
             | update 'stem' {
-                append ($target_size | into string | str downcase | str replace '.0 ' '' | str replace -a ' ' '')
+                append ($target_size | into string | str lowercase | str replace '.0 ' '' | str replace -a ' ' '')
                 | str join '-'
             }
             | path join
