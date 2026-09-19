@@ -2,25 +2,34 @@
 use std/bench
 use std-rfc/iter [only]
 
-use prompt.nu # Set left and right prompts
+# Set left and right prompts
+use prompt.nu
 
+# Use sqlite file instead of txt to store history
 $env.config.history.file_format = 'sqlite'
 $env.config.history.isolation = true
 
+# Set editor variables
 $env.config.buffer_editor = 'nvim'
-{} | default $env.config.buffer_editor 'VISUAL' 'EDITOR' | load-env
+{VISUAL: nvim, EDITOR: nvim} | load-env
 
 $env.config.show_banner = false
 
+# Fish-like highlighting of resolved externals
 $env.config.highlight_resolved_externals = true
-
-# Disable creating `~/.lesshist`
-$env.LESSHISTFILE = '-'
+$env.config.color_config.shape_external = 'red'
+$env.config.color_config.shape_external_resolved = 'cyan'
 
 # Save the last 10 unique directories in `$env.CD_HIST`
 $env.config.hooks.env_change.PWD = [{|before|
     $env.CD_HIST = $env.CD_HIST? | prepend $before | uniq | first 10
 }]
+
+# Configure carapace to use fallback completers
+$env.CARAPACE_BRIDGES = 'zsh,fish,bash'
+
+# Disable creating `~/.lesshist`
+$env.LESSHISTFILE = '-'
 
 # `cd` to the directory provided by stdin
 def --env cdl [
